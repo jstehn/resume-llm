@@ -1,6 +1,7 @@
 """User management API routes."""
 
 from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -15,28 +16,27 @@ router = APIRouter()
 async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     """Create a new user."""
     # Check if user already exists
-    existing_user = db.query(DBUser).filter(
-        (DBUser.username == user.username) | (DBUser.email == user.email)
-    ).first()
-    
+    existing_user = (
+        db.query(DBUser)
+        .filter((DBUser.username == user.username) | (DBUser.email == user.email))
+        .first()
+    )
+
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username or email already exists"
+            detail="Username or email already exists",
         )
-    
+
     # Create new user
     db_user = DBUser(
-        username=user.username,
-        email=user.email,
-        api_keys={},
-        preferences={}
+        username=user.username, email=user.email, api_keys={}, preferences={}
     )
-    
+
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    
+
     return db_user
 
 
@@ -51,45 +51,47 @@ async def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
 async def get_user(user_id: int, db: Session = Depends(get_db)):
     """Get a specific user with statistics."""
     user = db.query(DBUser).filter(DBUser.id == user_id).first()
-    
+
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
-    
+
     # Calculate statistics
     resume_count = len(user.resume_versions)
     application_count = len(user.job_applications)
-    active_conversations = len([c for c in user.conversations if c.job_application_id is not None])
-    
+    active_conversations = len(
+        [c for c in user.conversations if c.job_application_id is not None]
+    )
+
     return UserWithStats(
         **user.__dict__,
         resume_count=resume_count,
         application_count=application_count,
-        active_conversations=active_conversations
+        active_conversations=active_conversations,
     )
 
 
 @router.put("/{user_id}", response_model=User)
-async def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)):
+async def update_user(
+    user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)
+):
     """Update a user."""
     user = db.query(DBUser).filter(DBUser.id == user_id).first()
-    
+
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
-    
+
     # Update fields
     update_data = user_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(user, field, value)
-    
+
     db.commit()
     db.refresh(user)
-    
+
     return user
 
 
@@ -97,12 +99,11 @@ async def update_user(user_id: int, user_update: UserUpdate, db: Session = Depen
 async def delete_user(user_id: int, db: Session = Depends(get_db)):
     """Delete a user."""
     user = db.query(DBUser).filter(DBUser.id == user_id).first()
-    
+
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
-    
+
     db.delete(user)
     db.commit()

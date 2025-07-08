@@ -1,12 +1,15 @@
 """JSON Resume schema models based on https://jsonresume.org/schema/"""
 
 from __future__ import annotations
+
 from typing import List, Optional
+
 from pydantic import BaseModel, Field, HttpUrl
 
 
 class Location(BaseModel):
     """Location information."""
+
     address: Optional[str] = None
     postal_code: Optional[str] = Field(None, alias="postalCode")
     city: Optional[str] = None
@@ -16,6 +19,7 @@ class Location(BaseModel):
 
 class Profile(BaseModel):
     """Social media or professional profiles."""
+
     network: str  # e.g., "Twitter", "LinkedIn"
     username: Optional[str] = None
     url: HttpUrl
@@ -23,6 +27,7 @@ class Profile(BaseModel):
 
 class Basics(BaseModel):
     """Basic information about the person."""
+
     name: str
     label: Optional[str] = None  # Job title
     image: Optional[str] = None  # Allow empty string for image
@@ -36,6 +41,7 @@ class Basics(BaseModel):
 
 class Work(BaseModel):
     """Work experience."""
+
     name: str  # Company name
     position: str
     url: Optional[HttpUrl] = None
@@ -47,6 +53,7 @@ class Work(BaseModel):
 
 class Volunteer(BaseModel):
     """Volunteer experience."""
+
     organization: str
     position: str
     url: Optional[HttpUrl] = None
@@ -58,6 +65,7 @@ class Volunteer(BaseModel):
 
 class Education(BaseModel):
     """Education information."""
+
     institution: str
     url: Optional[HttpUrl] = None
     area: Optional[str] = None  # Field of study
@@ -70,6 +78,7 @@ class Education(BaseModel):
 
 class Award(BaseModel):
     """Awards and honors."""
+
     title: str
     date_awarded: Optional[str] = Field(None, alias="date")
     awarder: Optional[str] = None  # Organization that gave the award
@@ -78,6 +87,7 @@ class Award(BaseModel):
 
 class Certificate(BaseModel):
     """Certifications."""
+
     name: str
     issue_date: Optional[str] = Field(None, alias="date")
     url: Optional[HttpUrl] = None
@@ -86,6 +96,7 @@ class Certificate(BaseModel):
 
 class Publication(BaseModel):
     """Publications."""
+
     name: str
     publisher: str
     release_date: Optional[str] = Field(None, alias="releaseDate")
@@ -95,6 +106,7 @@ class Publication(BaseModel):
 
 class Skill(BaseModel):
     """Skills."""
+
     name: str
     level: Optional[str] = None  # e.g., "Master", "Intermediate"
     keywords: Optional[List[str]] = Field(default_factory=list)
@@ -102,24 +114,28 @@ class Skill(BaseModel):
 
 class Language(BaseModel):
     """Languages."""
+
     language: str
     fluency: Optional[str] = None  # e.g., "Fluent", "Native"
 
 
 class Interest(BaseModel):
     """Interests and hobbies."""
+
     name: str
     keywords: Optional[List[str]] = Field(default_factory=list)
 
 
 class Reference(BaseModel):
     """References."""
+
     name: str
     reference: str  # The reference text
 
 
 class Project(BaseModel):
     """Projects."""
+
     name: str
     description: Optional[str] = None
     highlights: Optional[List[str]] = Field(default_factory=list)
@@ -134,6 +150,7 @@ class Project(BaseModel):
 
 class Meta(BaseModel):
     """Metadata about the resume."""
+
     canonical: Optional[HttpUrl] = None
     version: Optional[str] = None
     last_modified: Optional[str] = Field(None, alias="lastModified")
@@ -141,7 +158,11 @@ class Meta(BaseModel):
 
 class JSONResume(BaseModel):
     """Complete JSON Resume schema."""
-    schema_url: Optional[str] = Field(default="https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json", alias="$schema")
+
+    schema_url: Optional[str] = Field(
+        default="https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+        alias="$schema",
+    )
     basics: Basics
     work: Optional[List[Work]] = Field(default_factory=list)
     volunteer: Optional[List[Volunteer]] = Field(default_factory=list)

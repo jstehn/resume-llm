@@ -1,14 +1,14 @@
 """Main FastAPI application."""
 
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-from sqlalchemy import text
 import uvicorn
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
-from ..database.connection import get_db, init_db
 from ..config.settings import settings
-from .routes import users, resumes, jobs
+from ..database.connection import get_db, init_db
+from .routes import jobs, resumes, users
 
 # Initialize database
 init_db()
@@ -19,7 +19,7 @@ app = FastAPI(
     description="AI-powered resume refinement tool API",
     version="0.1.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
 # Add CORS middleware
@@ -40,11 +40,7 @@ app.include_router(jobs.router, prefix="/api/v1/jobs", tags=["jobs"])
 @app.get("/")
 async def root():
     """Root endpoint."""
-    return {
-        "message": "Resume LLM API",
-        "version": "0.1.0",
-        "docs": "/docs"
-    }
+    return {"message": "Resume LLM API", "version": "0.1.0", "docs": "/docs"}
 
 
 @app.get("/health")
@@ -57,7 +53,7 @@ async def health_check(db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database connection failed: {str(e)}"
+            detail=f"Database connection failed: {str(e)}",
         )
 
 
@@ -66,5 +62,5 @@ if __name__ == "__main__":
         "resume_llm.api.main:app",
         host=settings.api_host,
         port=settings.api_port,
-        reload=settings.debug
+        reload=settings.debug,
     )

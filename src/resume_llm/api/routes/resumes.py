@@ -1,11 +1,13 @@
 """Resume management API routes."""
 
 from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from ...database.connection import get_db
-from ...database.models import ResumeVersion as DBResumeVersion, User as DBUser
+from ...database.models import ResumeVersion as DBResumeVersion
+from ...database.models import User as DBUser
 from ...models.resume import JSONResume
 
 router = APIRouter()
@@ -16,34 +18,33 @@ async def create_resume_version(
     user_id: int,
     version_name: str,
     resume_data: JSONResume,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Create a new resume version for a user."""
     # Check if user exists
     user = db.query(DBUser).filter(DBUser.id == user_id).first()
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
-    
+
     # Create resume version
     db_resume = DBResumeVersion(
         user_id=user_id,
         version_name=version_name,
-        json_resume_data=resume_data.model_dump(mode='json'),
-        is_active=False
+        json_resume_data=resume_data.model_dump(mode="json"),
+        is_active=False,
     )
-    
+
     db.add(db_resume)
     db.commit()
     db.refresh(db_resume)
-    
+
     return {
         "id": db_resume.id,
         "version_name": db_resume.version_name,
         "created_at": db_resume.created_at,
-        "is_active": db_resume.is_active
+        "is_active": db_resume.is_active,
     }
 
 
@@ -53,19 +54,20 @@ async def get_user_resume_versions(user_id: int, db: Session = Depends(get_db)):
     user = db.query(DBUser).filter(DBUser.id == user_id).first()
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
-    
-    versions = db.query(DBResumeVersion).filter(DBResumeVersion.user_id == user_id).all()
-    
+
+    versions = (
+        db.query(DBResumeVersion).filter(DBResumeVersion.user_id == user_id).all()
+    )
+
     return [
         {
             "id": version.id,
             "version_name": version.version_name,
             "created_at": version.created_at,
             "updated_at": version.updated_at,
-            "is_active": version.is_active
+            "is_active": version.is_active,
         }
         for version in versions
     ]
@@ -75,35 +77,31 @@ async def get_user_resume_versions(user_id: int, db: Session = Depends(get_db)):
 async def get_resume_version(version_id: int, db: Session = Depends(get_db)):
     """Get a specific resume version."""
     version = db.query(DBResumeVersion).filter(DBResumeVersion.id == version_id).first()
-    
+
     if not version:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Resume version not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Resume version not found"
         )
-    
+
     return JSONResume(**version.json_resume_data)
 
 
 @router.put("/versions/{version_id}", response_model=JSONResume)
 async def update_resume_version(
-    version_id: int,
-    resume_data: JSONResume,
-    db: Session = Depends(get_db)
+    version_id: int, resume_data: JSONResume, db: Session = Depends(get_db)
 ):
     """Update a resume version."""
     version = db.query(DBResumeVersion).filter(DBResumeVersion.id == version_id).first()
-    
+
     if not version:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Resume version not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Resume version not found"
         )
-    
+
     version.json_resume_data = resume_data.model_dump()
     db.commit()
     db.refresh(version)
-    
+
     return JSONResume(**version.json_resume_data)
 
 
@@ -111,23 +109,21 @@ async def update_resume_version(
 async def activate_resume_version(version_id: int, db: Session = Depends(get_db)):
     """Activate a resume version (deactivate others for the same user)."""
     version = db.query(DBResumeVersion).filter(DBResumeVersion.id == version_id).first()
-    
+
     if not version:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Resume version not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Resume version not found"
         )
-    
+
     # Deactivate all other versions for this user
     db.query(DBResumeVersion).filter(
-        DBResumeVersion.user_id == version.user_id,
-        DBResumeVersion.id != version_id
+        DBResumeVersion.user_id == version.user_id, DBResumeVersion.id != version_id
     ).update({"is_active": False})
-    
+
     # Activate this version
     version.is_active = True
     db.commit()
-    
+
     return {"message": "Resume version activated successfully"}
 
 
@@ -135,12 +131,11 @@ async def activate_resume_version(version_id: int, db: Session = Depends(get_db)
 async def delete_resume_version(version_id: int, db: Session = Depends(get_db)):
     """Delete a resume version."""
     version = db.query(DBResumeVersion).filter(DBResumeVersion.id == version_id).first()
-    
+
     if not version:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Resume version not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Resume version not found"
         )
-    
+
     db.delete(version)
     db.commit()
