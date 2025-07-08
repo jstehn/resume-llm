@@ -205,3 +205,23 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Resume LLM specific files
+# Database files - contains sensitive user data
+*.db
+*.sqlite
+*.sqlite3
+resume_llm.db
+
+# Environment files with secrets
+.env
+.env.local
+.env.production
+
+# User data directories
+data/user_uploads/
+data/exports/
+
+# Temporary files
+temp/
+tmp/
