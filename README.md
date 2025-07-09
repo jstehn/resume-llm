@@ -2,6 +2,10 @@
 
 An AI-powered resume refinement tool that helps you tailor your resume for specific job applications using Large Language Models and the JSON Resume standard.
 
+## Status
+
+Currently, the agents are not yet well tested. Functionality is redumentary as I focus on building out the infrastructure that the agent can utilize (users, api, resume history, jobs, etc.).
+
 ## Features
 
 - **Resume Ingestion**: Convert resumes from various formats (PDF, text, JSON Resume) into a standardized JSON format
@@ -27,7 +31,7 @@ An AI-powered resume refinement tool that helps you tailor your resume for speci
 
 1. **Clone the repository**:
 ```bash
-git clone https://github.com/your-username/resume-llm.git
+git clone https://github.com/jstehn/resume-llm.git
 cd resume-llm
 ```
 
