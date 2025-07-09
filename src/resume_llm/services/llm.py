@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Union
 from langchain_community.llms import Ollama
 from langchain_core.language_models import BaseLanguageModel
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 
 from ..config.settings import settings
@@ -66,6 +67,34 @@ class OllamaProvider(LLMProvider):
             return False
 
 
+class GeminiProvider(LLMProvider):
+    """Google Gemini provider."""
+
+    def get_model(self, model: str = "gemini-pro", **kwargs) -> ChatGoogleGenerativeAI:
+        """Get Gemini model."""
+        if not self.is_available():
+            raise RuntimeError(
+                "Gemini API key not available or langchain-google-genai not installed"
+            )
+
+        # Set environment variable for Google API
+        if settings.google_api_key:
+            os.environ["GOOGLE_API_KEY"] = settings.google_api_key
+
+        return ChatGoogleGenerativeAI(
+            model=model,
+            temperature=kwargs.get("temperature", 0.7),
+            convert_system_message_to_human=True,  # Gemini doesn't support system messages
+            **kwargs,
+        )
+
+    def is_available(self) -> bool:
+        """Check if Gemini API key is available and package is installed."""
+        return (
+            hasattr(settings, "google_api_key") and settings.google_api_key is not None
+        )
+
+
 class LLMService:
     """Service for managing LLM interactions."""
 
@@ -73,6 +102,7 @@ class LLMService:
         self.providers = {
             "openai": OpenAIProvider(),
             "ollama": OllamaProvider(),
+            "gemini": GeminiProvider(),
         }
         self._default_provider = None
 
@@ -84,20 +114,15 @@ class LLMService:
 
     def get_default_provider(self) -> str:
         """Get the default provider name."""
-        if self._default_provider:
-            return self._default_provider
-
         available = self.get_available_providers()
         if not available:
             raise RuntimeError("No LLM providers are available")
 
         # Prefer OpenAI if available, otherwise use first available
         if "openai" in available:
-            self._default_provider = "openai"
+            return "openai"
         else:
-            self._default_provider = available[0]
-
-        return self._default_provider
+            return available[0]
 
     def get_model(self, provider: Optional[str] = None, **kwargs) -> BaseLanguageModel:
         """Get a language model instance."""

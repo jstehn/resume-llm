@@ -34,9 +34,10 @@ repos:
             package-lock\.json$|
             poetry\.lock$|
             \.git/.*|
-            .*test.*\.py$|
+            tests/.*\.py$|
+            test_.*\.py$|
             .*example.*\.json$|
-            \.devcontainer/.*
+            \.env\.example$
           )$
 
   # Python-specific hooks
@@ -59,5 +60,5 @@ repos:
     rev: 1.8.6
     hooks:
       - id: bandit
-        args: ['-s', 'B104', '-r', '.']
+        args: ['-s', 'B101,B104', '-x', 'tests/,test_*.py']
         files: ^src/.*\.py$

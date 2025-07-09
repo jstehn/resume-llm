@@ -134,6 +134,7 @@ API documentation is available at `http://localhost:8000/docs` when the server i
 - `DATABASE_URL`: SQLite database path (default: `sqlite:///./resume_llm.db`)
 - `OPENAI_API_KEY`: OpenAI API key for GPT models
 - `ANTHROPIC_API_KEY`: Anthropic API key for Claude models
+- `GOOGLE_API_KEY`: Google API key for Gemini models
 - `OLLAMA_BASE_URL`: Ollama server URL for local models (default: `http://localhost:11434`)
 - `OLLAMA_MODEL`: Default Ollama model (default: `llama2`)
 
@@ -142,8 +143,9 @@ API documentation is available at `http://localhost:8000/docs` when the server i
 The system supports multiple LLM providers:
 
 1. **OpenAI**: Set `OPENAI_API_KEY` environment variable
-2. **Ollama (Local)**: Install and run [Ollama](https://ollama.ai/) locally
-3. **Anthropic**: Set `ANTHROPIC_API_KEY` environment variable
+2. **Google Gemini**: Set `GOOGLE_API_KEY` environment variable
+3. **Ollama (Local)**: Install and run [Ollama](https://ollama.ai/) locally
+4. **Anthropic**: Set `ANTHROPIC_API_KEY` environment variable
 
 The system will automatically detect available providers and use the best one available.
 

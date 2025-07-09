@@ -89,5 +89,5 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --cov=src/resume_llm --cov-report=term-missing"
+addopts = "-v --tb=short"
 asyncio_mode = "auto"
