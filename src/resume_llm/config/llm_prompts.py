@@ -58,13 +58,16 @@ class LLMPromptConfig:
 
 3) **Resume Building:**
    a) If a person provides a job description or link to a job, carefully review the description and research the company.
-   b) Create a resume in JSON Resume schema format.
+   b) Create a resume in JSON Resume schema format (schema: /workspaces/resume-llm/src/resume_llm/config/json_resume_schema.json).
    c) Be mindful of resume length (preferably one page).
    d) Ensure the resume works well for applicant tracking software and recruiters.
    e) Consider that the resume is meant to get the candidate in front of a person for an interview.
    f) Double check with the person for any skills that may be missing from their resume.
    g) Research other descriptions with the same job title.
    h) Do not remove the GPA from education and only edit the 'label' and 'summary' properties in 'basics'.
+   i) Follow the JSON Resume schema strictly - do not add custom fields outside the schema.
+   j) Use proper field names (e.g., "startDate" not "start_date", "postalCode" not "postal_code").
+   k) "entity" and "type" fields are only allowed in the "projects" section.
 
    **Resume Creation Process:**
    1) Identify what the employer wants and needs.
@@ -106,7 +109,7 @@ class LLMPromptConfig:
             temperature=0.7,
             model_preferences={
                 "openai": "gpt-4",
-                "gemini": "gemma-3n-e4b-it",
+                "gemini": "gemini-2.0-flash-lite",
                 "anthropic": "claude-3-sonnet-20240229",
             },
         ),
@@ -123,6 +126,20 @@ You are a professional resume optimization specialist focused on improving resum
 • Focus on quantifiable achievements and relevant skills
 • Optimize for both human recruiters and automated screening systems
 
+**CRITICAL: JSON Resume Schema Compliance**
+You MUST output resumes in valid JSON Resume schema format. The official schema is located at:
+/workspaces/resume-llm/src/resume_llm/config/json_resume_schema.json
+
+**Schema Requirements:**
+• Follow the exact JSON Resume schema structure - no additional fields outside the schema
+• Use proper field names (e.g., "startDate" not "start_date")
+• Date format: ISO 8601 with flexibility (YYYY-MM-DD, YYYY-MM, or YYYY)
+• URLs must be valid URIs
+• The "entity" and "type" fields are ONLY allowed in the "projects" section
+• Do NOT add custom fields to other sections
+• IMPORTANT: Do NOT use null values - omit optional fields entirely if they don't have values
+• String fields must contain actual strings, not null values
+
 **Guidelines:**
 • Always maintain factual accuracy - never fabricate experience
 • Prioritize relevant experience and skills for the target role
@@ -130,9 +147,10 @@ You are a professional resume optimization specialist focused on improving resum
 • Recommend appropriate technical keywords for the industry
 • Keep suggestions practical and implementable
 • Focus on results and impact over just duties
+• When providing optimized JSON Resume, ensure it passes schema validation
             """.strip(),
             temperature=0.3,
-            model_preferences={"openai": "gpt-4", "gemini": "gemma-3n-e4b-it"},
+            model_preferences={"openai": "gpt-4", "gemini": "gemini-2.0-flash-lite"},
         ),
         LLMRole.CAREER_ADVISOR: PromptTemplate(
             role=LLMRole.CAREER_ADVISOR,
@@ -155,7 +173,7 @@ You are an experienced career advisor specializing in technology and data scienc
 • Maintain a supportive but honest perspective
             """.strip(),
             temperature=0.6,
-            model_preferences={"openai": "gpt-4", "gemini": "gemma-3n-e4b-it"},
+            model_preferences={"openai": "gpt-4", "gemini": "gemini-2.0-flash-lite"},
         ),
         LLMRole.GENERAL_ASSISTANT: PromptTemplate(
             role=LLMRole.GENERAL_ASSISTANT,
@@ -176,7 +194,10 @@ You are a helpful assistant for the Resume LLM application.
 • Maintain a professional but approachable tone
             """.strip(),
             temperature=0.5,
-            model_preferences={"openai": "gpt-3.5-turbo", "gemini": "gemma-3n-e4b-it"},
+            model_preferences={
+                "openai": "gpt-3.5-turbo",
+                "gemini": "gemini-2.0-flash-lite",
+            },
         ),
     }
 

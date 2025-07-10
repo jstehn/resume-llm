@@ -9,7 +9,7 @@ class GeminiResumeTests:
     """Test Gemini with real resume optimization scenarios."""
 
     def __init__(self):
-        self.model_name = "gemma-3n-e4b-it"
+        self.model_name = "gemini-2.0-flash-lite"
         self.test_results = []
 
     async def test_professional_summary_generation(self):

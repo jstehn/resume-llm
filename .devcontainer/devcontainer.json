@@ -6,6 +6,10 @@
         8000
     ],
     "postCreateCommand": ".devcontainer/setup.sh",
+    "runArgs": [
+        "--env-file",
+        "${localWorkspaceFolder}/.env"
+    ],
     "customizations": {
         "vscode": {
             "extensions": [
@@ -49,8 +53,5 @@
                 }
             }
         }
-    },
-    "containerEnv": {
-        "PYTHONPATH": "/workspaces/resume-llm/src"
     }
 }

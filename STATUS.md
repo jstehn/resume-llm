@@ -42,6 +42,9 @@
 - ✅ **Resume Agent**: LangGraph-based optimization agent
 - ✅ **PDF Export**: ReportLab-based PDF generation
 - ✅ **Data Ingestion**: JSON Resume parsing and validation
+- ✅ **JSON Resume Validator**: Schema compliance validation with jsonschema
+- ✅ **JSON Extractor**: Intelligent JSON extraction from LLM responses
+- ✅ **Null Value Cleaner**: Automatic removal of null values for schema compliance
 
 ## 🧪 TESTED FUNCTIONALITY
 

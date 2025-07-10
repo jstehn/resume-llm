@@ -6,11 +6,7 @@ from unittest.mock import AsyncMock, Mock, patch
 import pytest
 
 from resume_llm.config.settings import settings
-from resume_llm.services.llm import (
-    GeminiProvider,
-    LLMService,
-    OpenAIProvider,
-)
+from resume_llm.services.llm import GeminiProvider, LLMService, OpenAIProvider
 
 
 class TestLLMProviders:
@@ -49,12 +45,11 @@ class TestLLMProviders:
                 mock_instance = Mock()
                 mock_model.return_value = mock_instance
 
-                model = provider.get_model(model="gemma-3n-e4b-it")
+                model = provider.get_model(model="gemini-2.0-flash-lite")
 
                 mock_model.assert_called_once_with(
-                    model="gemma-3n-e4b-it",
+                    model="gemini-2.0-flash-lite",
                     temperature=0.7,
-                    convert_system_message_to_human=True,
                 )
                 assert model == mock_instance
 
@@ -108,10 +103,10 @@ class TestLLMService:
         service.providers["gemini"].is_available = Mock(return_value=True)
         service.providers["gemini"].get_model = Mock(return_value=mock_model)
 
-        model = service.get_model(provider="gemini", model="gemma-3n-e4b-it")
+        model = service.get_model(provider="gemini", model="gemini-2.0-flash-lite")
 
         service.providers["gemini"].get_model.assert_called_once_with(
-            model="gemma-3n-e4b-it"
+            model="gemini-2.0-flash-lite"
         )
         assert model == mock_model
 
@@ -183,7 +178,7 @@ class TestGeminiIntegration:
         response = await service.generate_response(
             messages=["Say hello in exactly 5 words."],
             provider="gemini",
-            model="gemma-3n-e4b-it",
+            model="gemini-2.0-flash-lite",
         )
 
         assert isinstance(response, str)
@@ -201,7 +196,7 @@ class TestGeminiIntegration:
         prompt = "List 3 important skills for a Python developer resume. Be concise."
 
         response = await service.generate_response(
-            messages=[prompt], provider="gemini", model="gemma-3n-e4b-it"
+            messages=[prompt], provider="gemini", model="gemini-2.0-flash-lite"
         )
 
         assert isinstance(response, str)

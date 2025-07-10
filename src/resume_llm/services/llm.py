@@ -37,9 +37,10 @@ class OpenAIProvider(LLMProvider):
         if settings.openai_api_key:
             os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
-        return ChatOpenAI(
-            model=model, temperature=kwargs.get("temperature", 0.7), **kwargs
-        )
+        # Extract temperature and remove it from kwargs to avoid duplication
+        temperature = kwargs.pop("temperature", 0.7)
+
+        return ChatOpenAI(model=model, temperature=temperature, **kwargs)
 
     def is_available(self) -> bool:
         """Check if OpenAI API key is available."""
@@ -50,7 +51,7 @@ class GeminiProvider(LLMProvider):
     """Google Gemini provider."""
 
     def get_model(
-        self, model: str = "gemma-3n-e4b-it", **kwargs
+        self, model: str = "gemini-2.0-flash-lite", **kwargs
     ) -> ChatGoogleGenerativeAI:
         """Get Gemini model."""
         if not self.is_available():
@@ -62,10 +63,12 @@ class GeminiProvider(LLMProvider):
         if settings.google_api_key:
             os.environ["GOOGLE_API_KEY"] = settings.google_api_key
 
+        # Extract temperature and remove it from kwargs to avoid duplication
+        temperature = kwargs.pop("temperature", 0.7)
+
         return ChatGoogleGenerativeAI(
             model=model,
-            temperature=kwargs.get("temperature", 0.7),
-            convert_system_message_to_human=True,  # Gemini doesn't support system messages
+            temperature=temperature,
             **kwargs,
         )
 

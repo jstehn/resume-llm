@@ -204,9 +204,17 @@ class ResumeAgent:
         # Get the configured model
         model = llm_service.get_model(provider=self.provider, role=LLMRole.RECRUITER)
 
-        # For now, use the model without tool binding to avoid compatibility issues
-        # NOTE: Tool calling will be implemented when LLM service supports it
-        model_with_tools = model
+        # Use hasattr to check if model supports tool binding
+        if hasattr(model, "bind_tools"):
+            try:
+                # Try to bind tools but suppress type errors for now
+                model_with_tools = getattr(model, "bind_tools")(self.tools)
+            except (AttributeError, NotImplementedError, TypeError):
+                # Fallback if binding fails
+                model_with_tools = model
+        else:
+            # Model doesn't support tool binding
+            model_with_tools = model
 
         # Add system message if needed
         if not messages or not isinstance(messages[0], SystemMessage):
@@ -227,9 +235,36 @@ class ResumeAgent:
 
     def _should_continue(self, state: ResumeAgentState) -> Literal["continue", "end"]:
         """Determine if the agent should continue or end."""
-        # For now, always end after one interaction
-        # NOTE: Tool calling detection will be implemented later
-        _ = state  # Acknowledge unused parameter
+        messages = state["messages"]
+        last_message = messages[-1]
+
+        # Check if the last message contains tool calls (for models that support it)
+        if hasattr(last_message, "tool_calls") and getattr(
+            last_message, "tool_calls", None
+        ):
+            return "continue"
+
+        # Check if message content suggests tool usage
+        if hasattr(last_message, "content") and last_message.content:
+            content = last_message.content
+            # Handle different content types
+            if isinstance(content, str):
+                content_str = content.lower()
+            elif isinstance(content, list):
+                content_str = str(content).lower()
+            else:
+                content_str = str(content).lower()
+
+            tool_indicators = [
+                "analyze_resume_tool",
+                "optimize_resume_tool",
+                "research_company_tool",
+                "generate_session_notes_tool",
+                "provide_career_advice_tool",
+            ]
+            if any(indicator in content_str for indicator in tool_indicators):
+                return "continue"
+
         return "end"
 
     async def chat(self, message: str, **context) -> str:
@@ -281,16 +316,32 @@ class ResumeAgent:
         company_name: Optional[str] = None,
     ) -> str:
         """Optimize a resume for a specific job."""
+        # Create a more focused message instead of adding everything to system prompt
         resume_json = json.dumps(resume_data, indent=2)
+
+        message = f"""I need to optimize a resume for a specific job opportunity.
+
+**Job Description:**
+{job_description}
+
+**Company:** {company_name or "Not specified"}
+
+**Current Resume:**
+{resume_json}
+
+Please analyze the job requirements and provide specific suggestions for optimizing this resume to match the position. Focus on:
+1. Key skills and experiences to highlight
+2. Relevant keywords to include
+3. Specific improvements to make each section more compelling
+4. Any gaps that should be addressed
+
+Then provide an optimized version of the resume in JSON Resume format."""
+
         context = {
             "current_resume": resume_json,
             "job_description": job_description,
             "company_name": company_name or "Not specified",
         }
-
-        message = f"Please optimize my resume for this job: {job_description}"
-        if company_name:
-            message += f" at {company_name}"
 
         return await self.chat(message, **context)
 

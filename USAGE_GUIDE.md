@@ -178,3 +178,44 @@ Each role has its own configuration:
    ```
 
 This setup provides a clear, structured approach to using LLMs with specific roles and behaviors, making it easy to get consistent, professional results for resume optimization tasks.
+
+## Schema Validation and Data Quality
+
+### JSON Resume Validation
+
+The system automatically validates and cleans resume data:
+
+```bash
+# Validate a JSON Resume file
+resume-llm validate my_resume.json
+
+# Check validation during optimization
+resume-llm optimize resume.json job_description.txt -o optimized.json
+# Output includes: ✅ Saved resume is valid JSON Resume format!
+```
+
+### Validation Features
+
+- **Schema Compliance**: Validates against official JSON Resume schema
+- **Null Value Removal**: Automatically removes null values that cause validation errors
+- **JSON Extraction**: Intelligently extracts JSON Resume from LLM responses
+- **Error Reporting**: Detailed validation messages with field paths
+
+### Programming Interface for Validation
+
+```python
+from resume_llm.utils.json_resume_validator import JSONResumeValidator
+from resume_llm.utils.json_extractor import save_json_resume_from_response
+
+# Validate existing resume
+validator = JSONResumeValidator()
+is_valid, errors = validator.validate(resume_data)
+
+if not is_valid:
+    for error in errors:
+        print(f"Validation error: {error}")
+
+# Extract and save from LLM response (automatically removes nulls)
+llm_response = "Here's your optimized resume: {...}"
+success = save_json_resume_from_response(llm_response, "output.json")
+```

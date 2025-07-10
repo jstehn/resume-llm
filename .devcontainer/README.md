@@ -87,8 +87,7 @@ The dev container includes:
 ```
 .devcontainer/
 ├── devcontainer.json          # Container configuration
-├── setup.sh                   # Automatic setup script
-└── devcontainer.env.example   # Alternative env file location
+└── setup.sh                   # Automatic setup script
 
 load_env.sh                     # Manual environment loader
 run_tests.py                    # Comprehensive test runner
@@ -141,12 +140,3 @@ source load_env.sh
 - Run `source load_env.sh` to load environment variables
 - Verify API keys are valid
 - Check internet connection for API calls
-
-### Missing dependencies
-```bash
-# Reinstall dependencies
-pip install -r requirements.txt
-
-# Or rebuild container
-# Ctrl+Shift+P -> "Dev Containers: Rebuild Container"
-```

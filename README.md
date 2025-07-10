@@ -11,7 +11,9 @@ Currently, the agents are not yet well tested. Functionality is redumentary as I
 - **Resume Ingestion**: Convert resumes from various formats (PDF, text, JSON Resume) into a standardized JSON format
 - **AI-Powered Analysis**: Use LangGraph agents to analyze job descriptions and identify key requirements
 - **Smart Optimization**: Get specific suggestions for improving your resume for each job application
-- **Multiple LLM Support**: Works with OpenAI GPT models or other LangChain-compatible providers
+- **JSON Resume Validation**: Comprehensive validation against the official JSON Resume schema
+- **Schema Compliance**: Automatic null value removal and schema validation to ensure clean, compliant resumes
+- **Multiple LLM Support**: Works with OpenAI GPT models, Google Gemini, or other LangChain-compatible providers
 - **Version Control**: Track different versions of your resume and their modifications
 - **User Management**: Support for multiple users with their own configurations and API keys
 - **Conversation History**: Stateful AI agent that remembers previous interactions
@@ -24,8 +26,10 @@ Currently, the agents are not yet well tested. Functionality is redumentary as I
 - **Backend**: Python, FastAPI, SQLAlchemy, SQLite
 - **AI Framework**: LangChain, LangGraph for agent workflows
 - **Resume Standard**: [JSON Resume](https://jsonresume.org/) for structured data
+- **Schema Validation**: jsonschema library for JSON Resume compliance
 - **PDF Generation**: ReportLab for professional resume PDFs
 - **Database**: SQLite for simplicity and portability
+- **Data Processing**: Automatic null value removal and JSON extraction from LLM responses
 
 ## Installation
 
@@ -207,25 +211,60 @@ alembic upgrade head
 - [ ] Cover letter generation
 - [ ] Interview preparation assistance
 
+## Documentation
+
+- **[README.md](README.md)** - Main project documentation
+- **[USAGE_GUIDE.md](USAGE_GUIDE.md)** - Role-based LLM configuration and usage
+- **[CLI_LANGGRAPH_GUIDE.md](CLI_LANGGRAPH_GUIDE.md)** - Enhanced CLI features and context switching
+- **[JSON_RESUME_VALIDATION.md](JSON_RESUME_VALIDATION.md)** - JSON Resume validation and data quality guide
+- **[STATUS.md](STATUS.md)** - Project status and completed features
+- **[PRECOMMIT.md](PRECOMMIT.md)** - Pre-commit configuration and development practices
+
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions! Please see the documentation files above for detailed information about the project structure and features.
+
+### Development Setup
+
+1. Clone the repository
+2. Install dependencies: `pip install -r requirements.txt`
+3. Install in development mode: `pip install -e .`
+4. Run tests: `pytest tests/`
+5. Check code quality: `pre-commit run --all-files`
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Acknowledgments
+## Support
 
-- [JSON Resume](https://jsonresume.org/) for the resume schema standard
-- [LangChain](https://langchain.com/) for the LLM framework
-- [LangGraph](https://langchain-ai.github.io/langgraph/) for agent workflow orchestration
-- The open source community for inspiration and tools
+For questions or issues, please check the documentation files or create an issue on GitHub.
 
----
+## Schema Validation and Data Quality
 
-**Note**: This tool is designed to assist with resume optimization, but human review and customization are always recommended for the best results.
+### JSON Resume Compliance
+
+The system ensures strict compliance with the [JSON Resume standard](https://jsonresume.org/):
+
+- **Automatic Schema Validation**: All resumes are validated against the official JSON Resume schema
+- **Null Value Removal**: Automatically removes null values that cause schema validation errors
+- **JSON Extraction**: Intelligently extracts JSON Resume data from LLM responses
+- **Clean Output**: Guarantees that saved resumes contain only valid, schema-compliant data
+
+### Validation Features
+
+```bash
+# Validate a JSON Resume file
+resume-llm validate my_resume.json
+
+# Check validation status during optimization
+resume-llm optimize resume.json job_description.txt -o optimized.json
+# Output: ✅ Saved resume is valid JSON Resume format!
+```
+
+The validation system:
+- Checks for required fields (at minimum: `basics.name`)
+- Validates data types and formats (emails, URLs, dates)
+- Ensures proper ISO 8601 date formatting
+- Removes null values that break schema compliance
+- Provides detailed error messages for any validation issues

@@ -37,7 +37,7 @@ async def test_basic_functionality():
 
     # Test 2: Model creation
     try:
-        _ = llm_service.get_model(provider="gemini", model="gemma-3n-e4b-it")
+        _ = llm_service.get_model(provider="gemini", model="gemini-2.0-flash-lite")
         print("✅ Test 2: Model creation successful")
         passed += 1
     except (ValueError, RuntimeError, ConnectionError, TimeoutError) as e:
@@ -48,7 +48,7 @@ async def test_basic_functionality():
         response = await llm_service.generate_response(
             messages=["Say 'Hello' in exactly one word."],
             provider="gemini",
-            model="gemma-3n-e4b-it",
+            model="gemini-2.0-flash-lite",
         )
         if response and len(response.strip()) > 0:
             print(f"✅ Test 3: Simple response generated: '{response[:50]}...'")
@@ -65,7 +65,7 @@ async def test_basic_functionality():
                 "List 2 important skills for a software engineer. Be very brief."
             ],
             provider="gemini",
-            model="gemma-3n-e4b-it",
+            model="gemini-2.0-flash-lite",
         )
         if response and any(
             word in response.lower()
@@ -108,7 +108,7 @@ async def test_performance():
                 "Write a one-sentence professional summary for a Python developer."
             ],
             provider="gemini",
-            model="gemma-3n-e4b-it",
+            model="gemini-2.0-flash-lite",
         )
 
         response_time = time.perf_counter() - start_time
@@ -186,7 +186,7 @@ async def main():
 
     if basic_ok and perf_ok:
         print("🎉 ALL TESTS PASSED! Gemini integration is working perfectly.")
-        print("✅ Model: gemma-3n-e4b-it")
+        print("✅ Model: gemini-2.0-flash-lite")
         print("✅ Provider: Google Gemini")
         print("✅ Integration: Complete")
     elif basic_ok:

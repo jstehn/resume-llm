@@ -42,6 +42,7 @@ dependencies = [
     "jinja2>=3.1.0",
     "aiofiles>=23.2.0",
     "httpx>=0.25.0",
+    "jsonschema>=4.20.0",
 ]
 
 [project.optional-dependencies]
@@ -91,3 +92,4 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short"
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
