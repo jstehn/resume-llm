@@ -36,7 +36,6 @@ The dev container automatically detects and loads API keys from your `.env` file
 - **OpenAI**: Set `OPENAI_API_KEY` for GPT models
 - **Google Gemini**: Set `GOOGLE_API_KEY` for Gemini models (Free tier available!)
 - **Anthropic**: Set `ANTHROPIC_API_KEY` for Claude models
-- **Ollama**: Local models (no API key needed)
 
 ### Setup Instructions:
 

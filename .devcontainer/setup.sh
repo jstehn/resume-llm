@@ -3,64 +3,55 @@
 
 echo "🚀 Setting up Resume LLM development environment..."
 
-# Install Python dependencies
-echo "📦 Installing Python dependencies..."
-pip3 install --user -r requirements.txt
+# --- Load Environment Variables ---
+DEVCONTAINER_ENV_FILE=".devcontainer/devcontainer.env"
 
-# Check for .env file and provide guidance
-if [ -f .env ]; then
-    echo "✅ .env file found!"
-    echo "🔑 Environment variables will be loaded from .env file"
+if [ -f "$DEVCONTAINER_ENV_FILE" ]; then
+    echo "✅ $DEVCONTAINER_ENV_FILE file found!"
+    echo "🔑 Environment variables will be loaded from $DEVCONTAINER_ENV_FILE"
 
-    # Load environment variables for the current session
     set -a
-    source .env
+    source "$DEVCONTAINER_ENV_FILE"
     set +a
 
-    echo "📋 Available LLM providers:"
-    if [ ! -z "$OPENAI_API_KEY" ]; then
-        echo "  ✅ OpenAI (API key configured)"
-    else
-        echo "  ❌ OpenAI (no API key)"
-    fi
-
-    if [ ! -z "$GOOGLE_API_KEY" ]; then
-        echo "  ✅ Google Gemini (API key configured)"
-    else
-        echo "  ❌ Google Gemini (no API key)"
-    fi
-
-    if [ ! -z "$ANTHROPIC_API_KEY" ]; then
-        echo "  ✅ Anthropic Claude (API key configured)"
-    else
-        echo "  ❌ Anthropic Claude (no API key)"
-    fi
-
-    echo "  ℹ️  Ollama (local - check if running)"
-
+    echo "📋 LLM Provider API Key Status:"
+    if [ ! -z "$OPENAI_API_KEY" ]; then echo "  ✅ OpenAI (API key configured)"; else echo "  ❌ OpenAI (OPENAI_API_KEY not found)"; fi
+    if [ ! -z "$GOOGLE_API_KEY" ]; then echo "  ✅ Google Gemini (API key configured)"; else echo "  ❌ Google Gemini (GOOGLE_API_KEY not found)"; fi
+    if [ ! -z "$ANTHROPIC_API_KEY" ]; then echo "  ✅ Anthropic Claude (API key configured)"; else echo "  ❌ Anthropic Claude (ANTHROPIC_API_KEY not found)"; fi
 else
-    echo "⚠️  .env file not found"
-    echo "📝 To configure API keys:"
-    echo "   1. Copy .env.example to .env"
-    echo "   2. Edit .env with your API keys"
-    echo "   3. Restart the dev container or source .env"
-    echo ""
-    echo "   cp .env.example .env"
-    echo "   # Edit .env with your keys"
+    echo "⚠️  $DEVCONTAINER_ENV_FILE file not found. API keys might not be set."
+    echo "   Consider creating it: cp .devcontainer/devcontainer.env.example .devcontainer/devcontainer.env"
 fi
 
-# Set up Python path
-export PYTHONPATH="/workspaces/resume-llm/src:$PYTHONPATH"
+echo ""
+
+# --- Install Project and Development Dependencies using pip ---
+echo "📦 Installing project dependencies and 'dev' optional dependencies from pyproject.toml..."
+pip3 install --user --upgrade --no-cache-dir -e ".[dev]" || \
+{
+    echo "❌ ERROR: Failed to install Python dependencies from pyproject.toml."
+    echo "Please check your pyproject.toml file and your internet connection."
+    exit 1
+}
+echo "✅ All project and development dependencies installed successfully."
 
 echo ""
+
+# --- Confirm PYTHONPATH ---
+echo "🌐 Final PYTHONPATH is: $PYTHONPATH"
+
+echo ""
+
+# --- Quick Start Commands ---
 echo "🎯 Quick start commands:"
-echo "   # Test Gemini integration"
+echo "   # To run tests:"
 echo "   python run_tests.py"
 echo ""
-echo "   # Start the API server"
+echo "   # To start the API server:"
 echo "   python -m resume_llm.api.main"
 echo ""
-echo "   # Use the CLI"
-echo "   python -m resume_llm.cli.main --help"
+echo "   # To use the command-line interface:"
+echo "   resume-llm --help"
 echo ""
+
 echo "✨ Development environment ready!"

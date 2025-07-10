@@ -11,7 +11,7 @@ Currently, the agents are not yet well tested. Functionality is redumentary as I
 - **Resume Ingestion**: Convert resumes from various formats (PDF, text, JSON Resume) into a standardized JSON format
 - **AI-Powered Analysis**: Use LangGraph agents to analyze job descriptions and identify key requirements
 - **Smart Optimization**: Get specific suggestions for improving your resume for each job application
-- **Multiple LLM Support**: Works with OpenAI GPT models, local Ollama models, or other LangChain-compatible providers
+- **Multiple LLM Support**: Works with OpenAI GPT models or other LangChain-compatible providers
 - **Version Control**: Track different versions of your resume and their modifications
 - **User Management**: Support for multiple users with their own configurations and API keys
 - **Conversation History**: Stateful AI agent that remembers previous interactions
@@ -135,8 +135,6 @@ API documentation is available at `http://localhost:8000/docs` when the server i
 - `OPENAI_API_KEY`: OpenAI API key for GPT models
 - `ANTHROPIC_API_KEY`: Anthropic API key for Claude models
 - `GOOGLE_API_KEY`: Google API key for Gemini models
-- `OLLAMA_BASE_URL`: Ollama server URL for local models (default: `http://localhost:11434`)
-- `OLLAMA_MODEL`: Default Ollama model (default: `llama2`)
 
 ### LLM Providers
 
@@ -144,8 +142,7 @@ The system supports multiple LLM providers:
 
 1. **OpenAI**: Set `OPENAI_API_KEY` environment variable
 2. **Google Gemini**: Set `GOOGLE_API_KEY` environment variable
-3. **Ollama (Local)**: Install and run [Ollama](https://ollama.ai/) locally
-4. **Anthropic**: Set `ANTHROPIC_API_KEY` environment variable
+3. **Anthropic**: Set `ANTHROPIC_API_KEY` environment variable
 
 The system will automatically detect available providers and use the best one available.
 
@@ -201,7 +198,7 @@ alembic upgrade head
 - [x] Resume version control
 - [x] LangGraph-based AI agent for resume optimization
 - [x] PDF export functionality
-- [x] Multiple LLM provider support (OpenAI, Ollama)
+- [x] Multiple LLM provider support (OpenAI, Gemini)
 - [ ] Web interface (React/Vue.js frontend)
 - [ ] Advanced PDF templates and styling
 - [ ] Resume analytics and improvement tracking

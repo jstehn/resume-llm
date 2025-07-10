@@ -6,8 +6,10 @@ from pathlib import Path
 from typing import Optional
 
 import click
+import uvicorn
 
 from ..agents.resume_agent import ResumeAgent
+from ..api.main import app
 from ..database.connection import init_db
 from ..models.resume import JSONResume
 from ..services.llm import llm_service
@@ -31,20 +33,20 @@ def init():
         click.echo("✅ Database initialized successfully!")
     except Exception as e:
         click.echo(f"❌ Error initializing database: {e}")
-        return
+        raise
 
     # Check LLM providers
     click.echo("\nChecking LLM providers...")
-    providers = llm_service.get_provider_info()
+    provider_list = llm_service.get_provider_info()
 
-    for name, info in providers.items():
+    for name, info in provider_list.items():
         status = "✅ Available" if info["available"] else "❌ Not available"
         default = " (default)" if info["is_default"] else ""
         click.echo(f"  {name}: {status}{default}")
 
     if not llm_service.get_available_providers():
         click.echo("\n⚠️  Warning: No LLM providers are available.")
-        click.echo("Please configure an API key or set up Ollama for local models.")
+        click.echo("Please configure an API key.")
 
     click.echo("\n🎉 Resume LLM is ready to use!")
 
@@ -58,12 +60,11 @@ def init():
     type=click.Path(path_type=Path),
     help="Output file for optimized resume",
 )
-@click.option("--provider", "-p", help="LLM provider to use (openai, ollama)")
+@click.option("--provider", "-p", help="LLM provider to use (openai, gemini, etc.)")
 def optimize(
     resume_file: Path,
     job_description_file: Path,
     output: Optional[Path],
-    provider: Optional[str],
 ):
     """Optimize a resume for a specific job description."""
     click.echo("🔍 Analyzing resume and job description...")
@@ -80,7 +81,7 @@ def optimize(
 
     except Exception as e:
         click.echo(f"❌ Error loading files: {e}")
-        return
+        raise
 
     # Run optimization
     async def run_optimization():
@@ -131,11 +132,12 @@ def optimize(
             # Show change summary
             change_summary = result.get("change_summary")
             if change_summary:
-                click.echo(f"\n📝 Summary of Changes:")
+                click.echo("\n📝 Summary of Changes:")
                 click.echo(change_summary)
 
         except Exception as e:
             click.echo(f"❌ Error during optimization: {e}")
+            raise e
 
     # Run the async function
     asyncio.run(run_optimization())
@@ -146,9 +148,9 @@ def providers():
     """List available LLM providers and their status."""
     click.echo("🤖 Available LLM Providers:")
 
-    providers = llm_service.get_provider_info()
+    providers_list = llm_service.get_provider_info()
 
-    for name, info in providers.items():
+    for name, info in providers_list.items():
         status = "✅ Available" if info["available"] else "❌ Not available"
         default = " (default)" if info["is_default"] else ""
         click.echo(f"  {name}: {status}{default}")
@@ -157,7 +159,8 @@ def providers():
         click.echo("\n⚠️  No providers are currently available.")
         click.echo("To set up providers:")
         click.echo("  • OpenAI: Set OPENAI_API_KEY environment variable")
-        click.echo("  • Ollama: Install and run Ollama locally")
+        click.echo("  • Google Gemini: Set GOOGLE_API_KEY environment variable")
+        click.echo("  • Anthropic Claude: Set ANTHROPIC_API_KEY environment variable")
 
 
 @main.command()
@@ -183,6 +186,7 @@ def validate(resume_file: Path):
         click.echo(f"❌ Invalid JSON: {e}")
     except Exception as e:
         click.echo(f"❌ Invalid resume format: {e}")
+        raise e
 
 
 @main.command()
@@ -194,10 +198,6 @@ def serve(host: str, port: int, reload: bool):
     click.echo(f"🚀 Starting Resume LLM API server on {host}:{port}")
 
     try:
-        import uvicorn
-
-        from ..api.main import app
-
         uvicorn.run(app, host=host, port=port, reload=reload)
     except ImportError:
         click.echo(
@@ -205,6 +205,7 @@ def serve(host: str, port: int, reload: bool):
         )
     except Exception as e:
         click.echo(f"❌ Error starting server: {e}")
+        raise e
 
 
 if __name__ == "__main__":

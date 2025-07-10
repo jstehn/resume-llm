@@ -38,7 +38,7 @@
   - GET /api/v1/jobs/applications/user/{user_id} - List user applications
 
 ### Services
-- ✅ **LLM Service**: OpenAI and Ollama integration framework
+- ✅ **LLM Service**: LLM integration framework
 - ✅ **Resume Agent**: LangGraph-based optimization agent
 - ✅ **PDF Export**: ReportLab-based PDF generation
 - ✅ **Data Ingestion**: JSON Resume parsing and validation
@@ -110,7 +110,6 @@ python -m src.resume_llm.cli.main validate data/examples/sample_resume.json
 
 ### LLM Integration (Requires API Keys)
 - Set `OPENAI_API_KEY` for OpenAI integration
-- Install Ollama locally for local LLM support
 - Test resume optimization with real job descriptions
 
 ### Enhanced Features

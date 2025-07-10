@@ -14,7 +14,6 @@ if [ -f .env ]; then
     [ ! -z "$OPENAI_API_KEY" ] && echo "  ✅ OpenAI"
     [ ! -z "$GOOGLE_API_KEY" ] && echo "  ✅ Google Gemini"
     [ ! -z "$ANTHROPIC_API_KEY" ] && echo "  ✅ Anthropic Claude"
-    echo "  ℹ️  Ollama (check if service is running)"
 else
     echo "❌ .env file not found!"
     echo "💡 Create one from .env.example:"

@@ -1,23 +1,15 @@
 """Unit tests for LLM service with Gemini support."""
 
-import asyncio
 import os
-import sys
-from pathlib import Path
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-
-# Add the src directory to Python path
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from resume_llm.config.settings import settings
 from resume_llm.services.llm import (
     GeminiProvider,
     LLMService,
-    OllamaProvider,
     OpenAIProvider,
-    llm_service,
 )
 
 
@@ -66,22 +58,6 @@ class TestLLMProviders:
                 )
                 assert model == mock_instance
 
-    def test_ollama_provider_availability(self):
-        """Test Ollama provider availability check."""
-        provider = OllamaProvider()
-
-        # Test with successful connection
-        with patch("httpx.get") as mock_get:
-            mock_response = Mock()
-            mock_response.status_code = 200
-            mock_get.return_value = mock_response
-
-            assert provider.is_available()
-
-        # Test with failed connection
-        with patch("httpx.get", side_effect=Exception("Connection failed")):
-            assert not provider.is_available()
-
 
 class TestLLMService:
     """Test the main LLM service."""
@@ -90,9 +66,8 @@ class TestLLMService:
         """Test LLM service initialization."""
         service = LLMService()
 
-        # Should always have OpenAI, Ollama, and Gemini
+        # Should always have OpenAI and Gemini
         assert "openai" in service.providers
-        assert "ollama" in service.providers
         assert "gemini" in service.providers
 
     def test_get_available_providers(self):
@@ -116,7 +91,6 @@ class TestLLMService:
         # Mock providers availability
         service.providers["openai"].is_available = Mock(return_value=True)
         service.providers["gemini"].is_available = Mock(return_value=True)
-        service.providers["ollama"].is_available = Mock(return_value=False)
 
         # Should prefer OpenAI
         assert service.get_default_provider() == "openai"
@@ -185,7 +159,6 @@ class TestLLMService:
         # Mock provider availability
         service.providers["openai"].is_available = Mock(return_value=True)
         service.providers["gemini"].is_available = Mock(return_value=True)
-        service.providers["ollama"].is_available = Mock(return_value=False)
 
         info = service.get_provider_info()
 
@@ -193,8 +166,6 @@ class TestLLMService:
         assert info["openai"]["is_default"] is True  # OpenAI is preferred
         assert info["gemini"]["available"] is True
         assert info["gemini"]["is_default"] is False
-        assert info["ollama"]["available"] is False
-        assert info["ollama"]["is_default"] is False
 
 
 class TestGeminiIntegration:

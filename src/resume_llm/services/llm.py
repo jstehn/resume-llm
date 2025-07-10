@@ -4,9 +4,8 @@ import os
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Union
 
-from langchain_community.llms import Ollama
 from langchain_core.language_models import BaseLanguageModel
-from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 
@@ -19,12 +18,10 @@ class LLMProvider(ABC):
     @abstractmethod
     def get_model(self, **kwargs) -> BaseLanguageModel:
         """Get the language model instance."""
-        pass
 
     @abstractmethod
     def is_available(self) -> bool:
         """Check if the provider is available."""
-        pass
 
 
 class OpenAIProvider(LLMProvider):
@@ -46,25 +43,6 @@ class OpenAIProvider(LLMProvider):
     def is_available(self) -> bool:
         """Check if OpenAI API key is available."""
         return settings.openai_api_key is not None
-
-
-class OllamaProvider(LLMProvider):
-    """Ollama provider for local models."""
-
-    def get_model(self, model: Optional[str] = None, **kwargs) -> Ollama:
-        """Get Ollama model."""
-        model_name = model or settings.ollama_model
-        return Ollama(base_url=settings.ollama_base_url, model=model_name, **kwargs)
-
-    def is_available(self) -> bool:
-        """Check if Ollama is available."""
-        try:
-            import httpx
-
-            response = httpx.get(f"{settings.ollama_base_url}/api/tags", timeout=5.0)
-            return response.status_code == 200
-        except Exception:
-            return False
 
 
 class GeminiProvider(LLMProvider):
@@ -101,7 +79,6 @@ class LLMService:
     def __init__(self):
         self.providers = {
             "openai": OpenAIProvider(),
-            "ollama": OllamaProvider(),
             "gemini": GeminiProvider(),
         }
         self._default_provider = None

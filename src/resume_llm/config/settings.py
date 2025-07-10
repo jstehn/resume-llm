@@ -1,6 +1,5 @@
 """Configuration management for Resume LLM."""
 
-import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -23,10 +22,6 @@ class Settings(BaseSettings):
     openai_api_key: Optional[str] = Field(default=None)
     anthropic_api_key: Optional[str] = Field(default=None)
     google_api_key: Optional[str] = Field(default=None)
-
-    # Local LLM Configuration
-    ollama_base_url: str = Field(default="http://localhost:11434")
-    ollama_model: str = Field(default="llama2")
 
     # API Configuration
     api_host: str = Field(default="0.0.0.0")
@@ -53,12 +48,6 @@ class Settings(BaseSettings):
                 "api_key": self.anthropic_api_key,
                 "model": "claude-3-sonnet-20240229",
             }
-
-        # Always include local option
-        config["ollama"] = {
-            "base_url": self.ollama_base_url,
-            "model": self.ollama_model,
-        }
 
         return config
 

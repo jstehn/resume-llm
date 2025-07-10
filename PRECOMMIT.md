@@ -30,6 +30,4 @@ git commit --no-verify -m "Emergency commit"
 ✅ **Prevents secret leaks**: API keys, passwords, tokens  
 ✅ **Catches security issues**: SQL injection, XSS, etc.  
 ✅ **Maintains code quality**: Consistent formatting and imports  
-✅ **Automated scanning**: No manual review needed  
-
-Your repository is now protected against common security vulnerabilities!
+✅ **Automated scanning**: No manual review needed
