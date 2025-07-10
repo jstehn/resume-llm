@@ -1,15 +1,17 @@
-"""Simple test runner for Gemini integration tests."""
+"""Simple test runner for Gemini integration tests.
+
+To run with timing information:
+- pytest tests/test_gemini_integration.py -v  # Show test durations
+- pytest tests/test_gemini_integration.py --durations=5  # Show 5 slowest tests
+"""
 
 import asyncio
 import os
-import sys
-from pathlib import Path
+import time
 
 import pytest
 
-# Add the src directory to Python path
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
+from resume_llm.config.settings import settings
 from resume_llm.services.llm import llm_service
 
 
@@ -19,26 +21,26 @@ async def test_basic_functionality():
     print("🧪 Basic Gemini Functionality Tests")
     print("-" * 40)
 
-    tests_passed = 0
-    total_tests = 4
+    passed = 0
+    total = 4
 
     # Test 1: Provider availability
     try:
         providers = llm_service.get_available_providers()
         if "gemini" in providers:
             print("✅ Test 1: Gemini provider is available")
-            tests_passed += 1
+            passed += 1
         else:
             print("❌ Test 1: Gemini provider not available")
-    except Exception as e:
+    except (ValueError, RuntimeError, ConnectionError, TimeoutError) as e:
         print(f"❌ Test 1: Error checking provider availability: {e}")
 
     # Test 2: Model creation
     try:
-        model = llm_service.get_model(provider="gemini", model="gemma-3n-e4b-it")
+        _ = llm_service.get_model(provider="gemini", model="gemma-3n-e4b-it")
         print("✅ Test 2: Model creation successful")
-        tests_passed += 1
-    except Exception as e:
+        passed += 1
+    except (ValueError, RuntimeError, ConnectionError, TimeoutError) as e:
         print(f"❌ Test 2: Model creation failed: {e}")
 
     # Test 3: Simple response
@@ -50,10 +52,10 @@ async def test_basic_functionality():
         )
         if response and len(response.strip()) > 0:
             print(f"✅ Test 3: Simple response generated: '{response[:50]}...'")
-            tests_passed += 1
+            passed += 1
         else:
             print("❌ Test 3: Empty or invalid response")
-    except Exception as e:
+    except (ValueError, RuntimeError, ConnectionError, TimeoutError) as e:
         print(f"❌ Test 3: Response generation failed: {e}")
 
     # Test 4: Resume-specific task
@@ -78,20 +80,18 @@ async def test_basic_functionality():
             ]
         ):
             print(f"✅ Test 4: Resume task completed: '{response[:50]}...'")
-            tests_passed += 1
+            passed += 1
         else:
             print(
                 f"❌ Test 4: Resume task failed or irrelevant response: '{response[:50]}...'"
             )
-    except Exception as e:
+    except (ValueError, RuntimeError, ConnectionError, TimeoutError) as e:
         print(f"❌ Test 4: Resume task failed: {e}")
 
     print("-" * 40)
-    print(
-        f"📊 Results: {tests_passed}/{total_tests} tests passed ({tests_passed/total_tests*100:.1f}%)"
-    )
+    print(f"📊 Results: {passed}/{total} tests passed ({passed/total*100:.1f}%)")
 
-    return tests_passed == total_tests
+    return passed == total
 
 
 @pytest.mark.asyncio
@@ -100,9 +100,7 @@ async def test_performance():
     print("\n🚀 Performance Tests")
     print("-" * 40)
 
-    import time
-
-    start_time = time.time()
+    start_time = time.perf_counter()
 
     try:
         response = await llm_service.generate_response(
@@ -113,21 +111,21 @@ async def test_performance():
             model="gemma-3n-e4b-it",
         )
 
-        end_time = time.time()
-        response_time = end_time - start_time
+        response_time = time.perf_counter() - start_time
 
         print(f"✅ Response time: {response_time:.2f} seconds")
         print(f"✅ Response length: {len(response)} characters")
         print(f"✅ Response preview: '{response[:100]}...'")
 
-        if response_time < 10:  # Reasonable response time
-            print("✅ Performance: Good response time")
-            return True
-        else:
-            print("⚠️ Performance: Slow response time")
-            return False
+        # Assert performance expectations
+        assert response_time < 10, f"Response too slow: {response_time:.2f}s"
+        assert len(response) > 10, "Response too short"
+        assert response.strip(), "Empty response"
 
-    except Exception as e:
+        print("✅ Performance: All assertions passed")
+        return True
+
+    except (ValueError, RuntimeError, ConnectionError, TimeoutError) as e:
         print(f"❌ Performance test failed: {e}")
         return False
 
@@ -138,7 +136,7 @@ def check_environment():
     print("-" * 40)
 
     checks_passed = 0
-    total_checks = 3
+    total_checks = 2
 
     # Check 1: Google API key
     if os.getenv("GOOGLE_API_KEY"):
@@ -147,25 +145,14 @@ def check_environment():
     else:
         print("❌ GOOGLE_API_KEY not found in environment")
 
-    # Check 2: Package installation
+    # Check 2: Settings configuration
     try:
-        from langchain_google_genai import ChatGoogleGenerativeAI
-
-        print("✅ langchain-google-genai package is installed")
-        checks_passed += 1
-    except ImportError:
-        print("❌ langchain-google-genai package not installed")
-
-    # Check 3: Settings configuration
-    try:
-        from resume_llm.config.settings import settings
-
         if hasattr(settings, "google_api_key"):
             print("✅ Settings configuration includes google_api_key")
             checks_passed += 1
         else:
             print("❌ Settings configuration missing google_api_key")
-    except Exception as e:
+    except (ValueError, RuntimeError, ConnectionError, TimeoutError) as e:
         print(f"❌ Settings configuration error: {e}")
 
     print(f"📊 Environment: {checks_passed}/{total_checks} checks passed")
@@ -183,8 +170,7 @@ async def main():
     if not env_ok:
         print("\n❌ Environment not properly configured. Please:")
         print("1. Set GOOGLE_API_KEY environment variable")
-        print("2. Install langchain-google-genai package")
-        print("3. Update settings configuration")
+        print("2. Update settings configuration")
         return
 
     # Basic functionality tests
@@ -200,9 +186,9 @@ async def main():
 
     if basic_ok and perf_ok:
         print("🎉 ALL TESTS PASSED! Gemini integration is working perfectly.")
-        print(f"✅ Model: gemma-3n-e4b-it")
-        print(f"✅ Provider: Google Gemini")
-        print(f"✅ Integration: Complete")
+        print("✅ Model: gemma-3n-e4b-it")
+        print("✅ Provider: Google Gemini")
+        print("✅ Integration: Complete")
     elif basic_ok:
         print("⚠️ BASIC TESTS PASSED, performance could be better.")
     else:

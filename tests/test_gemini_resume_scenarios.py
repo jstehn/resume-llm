@@ -1,12 +1,6 @@
 """Integration tests for Gemini with real resume scenarios."""
 
 import asyncio
-import os
-import sys
-from pathlib import Path
-
-# Add the src directory to Python path
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from resume_llm.services.llm import llm_service
 
@@ -24,22 +18,34 @@ class GeminiResumeTests:
 
         test_cases = [
             {
-                "input": "I'm a Python developer with 2 years experience in web development, Django, and REST APIs.",
+                "input": (
+                    "I'm a Python developer with 2 years experience in web development, "
+                    "Django, and REST APIs."
+                ),
                 "expected_keywords": ["python", "web", "django", "api"],
             },
             {
-                "input": "Frontend developer with React, JavaScript, and 3 years of experience building user interfaces.",
+                "input": (
+                    "Frontend developer with React, JavaScript, and 3 years of experience "
+                    "building user interfaces."
+                ),
                 "expected_keywords": ["react", "javascript", "frontend", "ui"],
             },
             {
-                "input": "Data scientist with machine learning, pandas, and statistical analysis experience.",
+                "input": (
+                    "Data scientist with machine learning, pandas, and statistical "
+                    "analysis experience."
+                ),
                 "expected_keywords": ["data", "machine learning", "analysis"],
             },
         ]
 
         for i, test_case in enumerate(test_cases, 1):
             try:
-                prompt = f"Write a concise professional summary for this developer: {test_case['input']}. Keep it to 2-3 sentences."
+                prompt = (
+                    f"Write a concise professional summary for this developer: "
+                    f"{test_case['input']}. Keep it to 2-3 sentences."
+                )
 
                 response = await llm_service.generate_response(
                     messages=[prompt], provider="gemini", model=self.model_name
@@ -53,7 +59,8 @@ class GeminiResumeTests:
                 ]
 
                 print(
-                    f"  ✅ Test {i}: Generated summary ({len(keywords_found)}/{len(test_case['expected_keywords'])} keywords found)"
+                    f"  ✅ Test {i}: Generated summary "
+                    f"({len(keywords_found)}/{len(test_case['expected_keywords'])} keywords found)"
                 )
                 print(f"     Summary: {response[:100]}...")
 
@@ -65,7 +72,7 @@ class GeminiResumeTests:
                     }
                 )
 
-            except Exception as e:
+            except (ValueError, RuntimeError, ConnectionError, TimeoutError) as e:
                 print(f"  ❌ Test {i} failed: {e}")
                 self.test_results.append(
                     {
@@ -120,7 +127,7 @@ class GeminiResumeTests:
                     }
                 )
 
-            except Exception as e:
+            except (ValueError, RuntimeError, ConnectionError, TimeoutError) as e:
                 print(f"  ❌ Test {i} failed: {e}")
                 self.test_results.append(
                     {
@@ -159,19 +166,20 @@ class GeminiResumeTests:
 
             Candidate Profile: {candidate_profile}
 
-            Analyze the match and suggest 3 specific improvements for the resume to better align with this job. Be concise.
+            Analyze the match and suggest 3 specific improvements for the resume to better
+            align with this job. Be concise.
             """
 
             response = await llm_service.generate_response(
                 messages=[prompt], provider="gemini", model=self.model_name
             )
 
-            print(f"  ✅ Job match analysis completed")
+            print("  ✅ Job match analysis completed")
             print(f"     Analysis: {response[:200]}...")
 
             self.test_results.append({"test": "Job Match Analysis", "status": "PASS"})
 
-        except Exception as e:
+        except (ValueError, RuntimeError, ConnectionError, TimeoutError) as e:
             print(f"  ❌ Job match analysis failed: {e}")
             self.test_results.append(
                 {"test": "Job Match Analysis", "status": "FAIL", "error": str(e)}
@@ -195,19 +203,20 @@ class GeminiResumeTests:
             Here's a work experience section from a resume:
             {sample_resume_section}
 
-            Suggest 3 specific improvements to make it more impactful and professional. Focus on action verbs and quantifiable achievements.
+            Suggest 3 specific improvements to make it more impactful and professional.
+            Focus on action verbs and quantifiable achievements.
             """
 
             response = await llm_service.generate_response(
                 messages=[prompt], provider="gemini", model=self.model_name
             )
 
-            print(f"  ✅ Resume optimization suggestions generated")
+            print("  ✅ Resume optimization suggestions generated")
             print(f"     Suggestions: {response[:200]}...")
 
             self.test_results.append({"test": "Resume Optimization", "status": "PASS"})
 
-        except Exception as e:
+        except (ValueError, RuntimeError, ConnectionError, TimeoutError) as e:
             print(f"  ❌ Resume optimization failed: {e}")
             self.test_results.append(
                 {"test": "Resume Optimization", "status": "FAIL", "error": str(e)}

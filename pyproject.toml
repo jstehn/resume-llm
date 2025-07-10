@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "AI-powered resume refinement tool using LangGraph and JSON Resume"
 readme = "README.md"
 requires-python = ">=3.9"
-license = {text = "MIT"}
+license = {text = "GPLv3"}
 authors = [
     {name = "Resume LLM Contributors"}
 ]
@@ -25,13 +25,12 @@ classifiers = [
 ]
 
 dependencies = [
-    "langchain>=0.1.0",
+    "langchain[google-genai,openai,community]>=0.1.0",
     "langgraph>=0.1.0",
-    "langchain-openai>=0.1.0",
-    "langchain-community>=0.1.0",
     "sqlalchemy>=2.0.0",
     "alembic>=1.13.0",
-    "pydantic>=2.5.0",
+    "pydantic[email]>=2.5.0",
+    "pydantic-settings>=2.0.0",
     "fastapi>=0.104.0",
     "uvicorn>=0.24.0",
     "click>=8.1.0",

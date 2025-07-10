@@ -8,11 +8,12 @@ from typing import Optional
 import click
 import uvicorn
 
-from ..agents.resume_agent import ResumeAgent
+from ..agents import ResumeAgent
 from ..api.main import app
 from ..database.connection import init_db
 from ..models.resume import JSONResume
 from ..services.llm import llm_service
+from .agents import agent
 
 
 @click.group()
@@ -67,6 +68,7 @@ def optimize(
     output: Optional[Path],
 ):
     """Optimize a resume for a specific job description."""
+    _ = output  # Acknowledge unused parameter for now
     click.echo("🔍 Analyzing resume and job description...")
 
     try:
@@ -86,54 +88,21 @@ def optimize(
     # Run optimization
     async def run_optimization():
         try:
-            agent = ResumeAgent()
-            result = await agent.run(resume, job_description)
+            resume_agent = ResumeAgent()
+
+            # Convert JSONResume to dict for the agent
+            resume_data = resume.model_dump()
+
+            # Use the optimize method
+            result = await resume_agent.optimize_resume(
+                resume_data=resume_data,
+                job_description=job_description,
+                company_name=None,  # Add company name option if needed
+            )
 
             # Display results
-            click.echo("\n📊 Analysis Results:")
-            analysis = result.get("analysis_results", {})
-
-            if "suggestions" in analysis:
-                suggestions = analysis["suggestions"]
-                if (
-                    isinstance(suggestions, dict)
-                    and "raw_suggestions" not in suggestions
-                ):
-                    click.echo("💡 Suggestions:")
-                    for key, value in suggestions.items():
-                        if isinstance(value, list):
-                            click.echo(f"  {key}:")
-                            for item in value:
-                                click.echo(f"    • {item}")
-                        else:
-                            click.echo(f"  {key}: {value}")
-                else:
-                    click.echo("💡 Suggestions:")
-                    click.echo(
-                        suggestions.get(
-                            "raw_suggestions", "No structured suggestions available"
-                        )
-                    )
-
-            # Handle optimized resume
-            optimized_resume = result.get("optimized_resume")
-            if optimized_resume:
-                output_file = (
-                    output or resume_file.parent / f"{resume_file.stem}_optimized.json"
-                )
-
-                with open(output_file, "w", encoding="utf-8") as f:
-                    json.dump(optimized_resume.model_dump(), f, indent=2, default=str)
-
-                click.echo(f"\n✅ Optimized resume saved to: {output_file}")
-            else:
-                click.echo("\n⚠️  Could not generate optimized resume")
-
-            # Show change summary
-            change_summary = result.get("change_summary")
-            if change_summary:
-                click.echo("\n📝 Summary of Changes:")
-                click.echo(change_summary)
+            click.echo("\n📊 Optimization Results:")
+            click.echo(result)
 
         except Exception as e:
             click.echo(f"❌ Error during optimization: {e}")
@@ -206,6 +175,10 @@ def serve(host: str, port: int, reload: bool):
     except Exception as e:
         click.echo(f"❌ Error starting server: {e}")
         raise e
+
+
+# Add agent subcommands
+main.add_command(agent)
 
 
 if __name__ == "__main__":

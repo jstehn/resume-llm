@@ -12,7 +12,8 @@
                 "ms-python.python",
                 "ms-python.pylint",
                 "ms-python.black-formatter",
-                "ms-toolsai.jupyter"
+                "ms-toolsai.jupyter",
+                "ms-python.isort"
             ],
             "settings": {
                 "python.defaultInterpreterPath": "/usr/local/bin/python",

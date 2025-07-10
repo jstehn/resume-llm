@@ -1,1 +1,5 @@
-"""Agents package for LangGraph-based AI agents."""
+"""Agents package for LangChain-based AI agents."""
+
+from .main_agent import ResumeAgent
+
+__all__ = ["ResumeAgent"]

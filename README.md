@@ -85,25 +85,25 @@ resume-llm serve --host 0.0.0.0 --port 8000
 ```python
 import asyncio
 from resume_llm.models.resume import JSONResume
-from resume_llm.agents.resume_agent import ResumeAgent
+from resume_llm.agents import ResumeAgent
 
 async def optimize_resume():
     # Load your resume (JSON Resume format)
     with open("my_resume.json", "r") as f:
         resume_data = JSONResume(**json.load(f))
-    
+
     # Load job description
     with open("job_description.txt", "r") as f:
         job_description = f.read()
-    
+
     # Create and run the optimization agent
     agent = ResumeAgent()
     result = await agent.run(resume_data, job_description)
-    
+
     # Get the optimized resume
     optimized_resume = result.get("optimized_resume")
     suggestions = result.get("analysis_results", {}).get("suggestions", {})
-    
+
     return optimized_resume, suggestions
 
 # Run the optimization
