@@ -24,7 +24,28 @@
                     }
                 },
                 "files.insertFinalNewline": true,
-                "files.trimTrailingWhitespace": true
+                "files.trimTrailingWhitespace": true,
+                "files.exclude": {
+                    "**/.git": true,
+                    "**/.DS_Store": true,
+                    "**/__pycache__": true,
+                    "**/.venv": true,
+                    "**/venv": true,
+                    "**/.mypy_cache": true,
+                    "**/.pytest_cache": true,
+                    "**/.vscode": true,
+                    "**/*.bak": true,
+                    "**/*.pyc": true,
+                    "**/*.egg-info": true
+                },
+                "search.exclude": {
+                    "**/__pycache__": true,
+                    "**/.venv": true,
+                    "**/venv": true,
+                    "**/.mypy_cache": true,
+                    "**/.pytest_cache": true,
+                    "**/*.egg-info": true
+                }
             }
         }
     },
