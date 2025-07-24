@@ -1,0 +1,42 @@
+[project]
+name = "resume-llm"
+version = "0.1.0"
+description = "A project for resume building and review using LLMs."
+authors = [
+    { name = "Jack Stehn", email = "jack.stehn+github@protonmail.com" }
+]
+requires-python = ">=3.11"
+readme = "README.md"
+
+dependencies = [
+    "requests",
+    "langchain",
+    "langgraph",
+    "jsonschema",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "black",
+    "mypy",
+    "pylint",
+    "pytest",
+    "pre-commit"
+]
+
+[tool.black]
+line-length = 88
+
+[tool.ruff]
+line-length = 88
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+
+[tool.mypy]
+python_version = "3.11"
+
+[tool.pylint]
+max-line-length = 88
