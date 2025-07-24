@@ -10,7 +10,7 @@ readme = "README.md"
 
 dependencies = [
     "requests",
-    "langchain",
+    "langchain[community,anthropic,openai,google-genai,ollama]",
     "langgraph",
     "jsonschema",
 ]
