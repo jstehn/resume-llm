@@ -10,7 +10,7 @@ readme = "README.md"
 
 dependencies = [
     "requests",
-    "langchain[community,anthropic,openai,google-genai,ollama]",
+    "langchain[community,anthropic,openai,google-genai,ollama,huggingface]",
     "langgraph",
     "jsonschema",
 ]
@@ -22,7 +22,8 @@ dev = [
     "mypy",
     "pylint",
     "pytest",
-    "pre-commit"
+    "pre-commit",
+    "isort"
 ]
 
 [tool.black]

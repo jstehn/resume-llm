@@ -33,3 +33,8 @@ repos:
       - id: python-no-eval
       - id: python-no-log-warn
       - id: python-use-type-annotations
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        name: isort (python)
