@@ -1,11 +1,9 @@
-from typing import Optional
-
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 
 def get_llm(
     model: str = "gemini-3.5-flash-lite",
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
     **kwargs,
 ):
     """

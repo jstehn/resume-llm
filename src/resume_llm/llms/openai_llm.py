@@ -1,11 +1,10 @@
-from typing import Optional
-
 from langchain_openai import ChatOpenAI
+from pydantic import SecretStr
 
 
 def get_llm(
     model: str = "gpt-5.6-luna",
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
     **kwargs,
 ):
     """
@@ -15,4 +14,6 @@ def get_llm(
         api_key (str, optional): OpenAI API key. If None, uses env var.
         **kwargs: Additional args for ChatOpenAI.
     """
-    return ChatOpenAI(model=model, openai_api_key=api_key, **kwargs)
+    if api_key is not None:
+        kwargs["api_key"] = SecretStr(api_key)
+    return ChatOpenAI(model=model, **kwargs)

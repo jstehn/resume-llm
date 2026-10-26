@@ -1,12 +1,12 @@
-from typing import Optional
+from typing import Any
 
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 
 
 def get_llm(
     model: str = "HuggingFaceH4/zephyr-7b-beta",
-    api_key: Optional[str] = None,
-    endpoint_url: Optional[str] = None,
+    api_key: str | None = None,
+    endpoint_url: str | None = None,
     **kwargs,
 ):
     """
@@ -18,7 +18,7 @@ def get_llm(
         **kwargs: Additional args for HuggingFaceEndpoint.
     """
     # HuggingFaceEndpoint rejects repo_id and endpoint_url together
-    endpoint_args = (
+    endpoint_args: dict[str, Any] = (
         {"endpoint_url": endpoint_url} if endpoint_url else {"repo_id": model}
     )
     llm = HuggingFaceEndpoint(

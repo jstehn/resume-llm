@@ -18,6 +18,7 @@ dependencies = [
     "langchain-huggingface>=1.2",
     "langgraph>=1.2",
     "jsonschema",
+    "pydantic>=2",
 ]
 
 [project.optional-dependencies]
@@ -28,7 +29,8 @@ dev = [
     "pylint",
     "pytest",
     "pre-commit",
-    "isort"
+    "isort",
+    "types-jsonschema"
 ]
 
 [tool.black]
@@ -43,6 +45,8 @@ addopts = "-ra -q"
 
 [tool.mypy]
 python_version = "3.11"
+mypy_path = "src"
+explicit_package_bases = true
 
 [tool.pylint]
 max-line-length = 88

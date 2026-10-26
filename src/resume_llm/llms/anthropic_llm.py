@@ -1,11 +1,10 @@
-from typing import Optional
-
 from langchain_anthropic import ChatAnthropic
+from pydantic import SecretStr
 
 
 def get_llm(
     model: str = "claude-sonnet-5-5",
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
     **kwargs,
 ):
     """
@@ -15,4 +14,6 @@ def get_llm(
         api_key (str, optional): Anthropic API key. If None, uses env var.
         **kwargs: Additional args for ChatAnthropic.
     """
-    return ChatAnthropic(model=model, anthropic_api_key=api_key, **kwargs)
+    if api_key is not None:
+        kwargs["api_key"] = SecretStr(api_key)
+    return ChatAnthropic(model_name=model, **kwargs)

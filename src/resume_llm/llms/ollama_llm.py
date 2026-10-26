@@ -1,13 +1,11 @@
-from typing import Optional
-
 from langchain_ollama import ChatOllama
 
 
-def get_llm(model: str = "llama3.2", base_url: Optional[str] = None, **kwargs):
+def get_llm(model: str = "qwen3.6:35b-a3b", base_url: str | None = None, **kwargs):
     """
     Returns a LangChain Ollama chat model instance.
     Args:
-        model (str): Model name, e.g. 'llama3.2'.
+        model (str): Model name, e.g. 'qwen3.6:35b-a3b'.
         base_url (str, optional): Ollama server URL. If None, uses default.
         **kwargs: Additional args for ChatOllama.
     """

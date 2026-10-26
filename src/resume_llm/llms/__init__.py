@@ -1,5 +1,3 @@
-from typing import Optional
-
 from .anthropic_llm import get_llm as get_anthropic_llm
 from .google_llm import get_llm as get_google_llm
 from .hf_llm import get_llm as get_hf_llm
@@ -17,7 +15,7 @@ AVAILABLE_LLMS = [
 DEFAULT_MODELS = {
     "openai": "gpt-5.6-luna",
     "anthropic": "claude-sonnet-5-5",
-    "ollama": "llama3.2",
+    "ollama": "qwen3.6:35b-a3b",
     "google": "gemini-3.5-flash-lite",
     "huggingface": "HuggingFaceH4/zephyr-7b-beta",
 }
@@ -25,8 +23,8 @@ DEFAULT_MODELS = {
 
 def get_llm(
     name: str = "openai",
-    model: Optional[str] = None,
-    api_key: Optional[str] = None,
+    model: str | None = None,
+    api_key: str | None = None,
     **kwargs,
 ):
     """
