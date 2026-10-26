@@ -10,8 +10,13 @@ readme = "README.md"
 
 dependencies = [
     "requests",
-    "langchain[community,anthropic,openai,google-genai,ollama,huggingface]",
-    "langgraph",
+    "langchain-core>=1.7",
+    "langchain-anthropic>=1.7",
+    "langchain-openai>=1.7",
+    "langchain-google-genai>=4.4",
+    "langchain-ollama>=1.1",
+    "langchain-huggingface>=1.2",
+    "langgraph>=1.2",
     "jsonschema",
 ]
 

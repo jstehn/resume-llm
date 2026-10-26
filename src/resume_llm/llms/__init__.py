@@ -15,10 +15,10 @@ AVAILABLE_LLMS = [
 ]
 
 DEFAULT_MODELS = {
-    "openai": "gpt-4.1-nano-2025-04-14",
-    "anthropic": "claude-3-5-sonnet-latest",
-    "ollama": "llama2",
-    "google": "gemini-2.0-flash-lite",
+    "openai": "gpt-5.6-luna",
+    "anthropic": "claude-sonnet-5-5",
+    "ollama": "llama3.2",
+    "google": "gemini-3.5-flash-lite",
     "huggingface": "HuggingFaceH4/zephyr-7b-beta",
 }
 

@@ -1,7 +1,8 @@
-import pytest
-from jsonschema import ValidationError
 import os
 import sys
+
+import pytest
+from jsonschema import ValidationError
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
 from resume_llm.utils.jsonresume_validator import validate_jsonresume

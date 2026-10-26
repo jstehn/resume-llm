@@ -1,5 +1,6 @@
 import json
-from jsonschema import validate, ValidationError
+
+from jsonschema import ValidationError, validate
 
 
 def validate_jsonresume(resume_path: str, schema_path: str) -> bool:
