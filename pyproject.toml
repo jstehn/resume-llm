@@ -3,7 +3,7 @@ name = "resume-llm"
 version = "0.1.0"
 description = "A project for resume building and review using LLMs."
 authors = [
-    { name = "Jack Stehn", email = "jack.stehn+github@protonmail.com" }
+    { name = "Jack Stehn", email = "7625470+jstehn@users.noreply.github.com" }
 ]
 requires-python = ">=3.11"
 readme = "README.md"
