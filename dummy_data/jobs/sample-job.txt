@@ -1,0 +1,18 @@
+Senior Backend Engineer, Data Compression
+Hooli - Palo Alto, CA
+
+About the role
+Hooli's storage infrastructure team is looking for a senior backend engineer to
+improve the compression layer behind our cloud storage platform. You will design
+and optimize lossless compression algorithms that run at petabyte scale.
+
+What you'll do
+- Design, benchmark, and ship lossless compression algorithms for file storage.
+- Optimize performance-critical code paths in C++ and Python.
+- Lead technical design reviews and mentor engineers on the team.
+
+What we're looking for
+- 3+ years building backend or systems software.
+- Deep knowledge of compression algorithms and information theory.
+- Strong C++ and Python skills.
+- Experience leading or founding an engineering team is a plus.

@@ -1,3 +1,5 @@
+from langchain_core.language_models import BaseChatModel
+
 from .anthropic_llm import get_llm as get_anthropic_llm
 from .google_llm import get_llm as get_google_llm
 from .hf_llm import get_llm as get_hf_llm
@@ -26,7 +28,7 @@ def get_llm(
     model: str | None = None,
     api_key: str | None = None,
     **kwargs,
-):
+) -> BaseChatModel:
     """
     Select and return an LLM instance by name.
     Args:
@@ -35,7 +37,7 @@ def get_llm(
         api_key (str, optional): API key for the LLM.
         **kwargs: Additional provider-specific arguments.
     Returns:
-        LangChain LLM instance.
+        LangChain chat model instance.
     Raises:
         ValueError: If name is not recognized.
     """
@@ -55,3 +57,4 @@ def get_llm(
         return get_google_llm(model=model, api_key=api_key, **kwargs)
     elif name == "huggingface":
         return get_hf_llm(model=model, api_key=api_key, **kwargs)
+    raise ValueError(f"No factory registered for provider '{name}'")

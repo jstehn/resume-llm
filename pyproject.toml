@@ -21,6 +21,9 @@ dependencies = [
     "pydantic>=2",
 ]
 
+[project.scripts]
+resume-llm = "resume_llm.cli:main"
+
 [project.optional-dependencies]
 dev = [
     "ruff",
@@ -41,7 +44,10 @@ line-length = 88
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q"
+addopts = "-ra -q -m 'not live'"
+markers = [
+    "live: calls a real LLM; run with -m live (slow)",
+]
 
 [tool.mypy]
 python_version = "3.11"
